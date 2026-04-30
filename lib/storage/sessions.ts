@@ -3,6 +3,7 @@
 import type { Session, StoredMessage } from "@/types";
 
 const KEY = "proof-lab:sessions";
+const SCRATCH_PREFIX = "proof-lab:scratch:";
 
 function readAll(): Session[] {
   if (typeof window === "undefined") return [];
@@ -43,4 +44,35 @@ export function titleFromMessages(messages: StoredMessage[]): string {
   if (!first) return "New session";
   const text = first.text.trim().slice(0, 60);
   return text.length === 0 ? "New session" : text;
+}
+
+function scratchKey(id: string): string {
+  return `${SCRATCH_PREFIX}${id}`;
+}
+
+export function getScratch(id: string): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.sessionStorage.getItem(scratchKey(id)) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export function saveScratch(id: string, text: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(scratchKey(id), text);
+  } catch {
+    // ignore write failures
+  }
+}
+
+export function clearScratch(id: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(scratchKey(id));
+  } catch {
+    // ignore
+  }
 }

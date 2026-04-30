@@ -8,7 +8,6 @@ import Link from "next/link";
 
 import { MessageBubble } from "@/components/Chat/MessageBubble";
 import { MathInput, type MathInputHandle } from "@/components/Chat/MathInput";
-import { SymbolKeyboard } from "@/components/Chat/SymbolKeyboard";
 import { HintControls } from "@/components/Chat/HintControls";
 import { loadSettings } from "@/lib/storage/settings";
 import {
@@ -123,12 +122,13 @@ function LabPageInner() {
   }, [messages, status]);
 
   function send(text: string) {
-    if (!text.trim()) return;
+    const trimmed = text.trim();
+    if (!trimmed) return;
     if (!settings.apiKey) {
       alert("Please configure your API key in Settings first.");
       return;
     }
-    sendMessage({ text });
+    sendMessage({ text: `$${trimmed}$` });
     setDraft("");
   }
 
@@ -219,12 +219,7 @@ function LabPageInner() {
           onSubmit={() => send(draft)}
           disabled={noKey}
         />
-        {settings.showSymbolKeyboard && (
-          <SymbolKeyboard
-            onInsert={(latex, offset) => inputRef.current?.insertAtCursor(latex, offset)}
-          />
-        )}
-        <div className="flex justify-end">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <button
             onClick={() => send(draft)}
             disabled={noKey || !draft.trim() || status === "streaming" || status === "submitted"}

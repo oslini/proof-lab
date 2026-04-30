@@ -170,19 +170,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-lg bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
-          <div>
-            <div className="text-sm font-medium">Show symbol keyboard</div>
-            <div className="text-xs text-zinc-500">Toggle the math symbol palette in the lab.</div>
-          </div>
-          <input
-            type="checkbox"
-            checked={settings.showSymbolKeyboard}
-            onChange={(e) => update("showSymbolKeyboard", e.target.checked)}
-            className="h-5 w-5"
-          />
-        </div>
-
         <div className="flex flex-wrap items-center gap-3 pt-4">
           <button
             onClick={onSave}

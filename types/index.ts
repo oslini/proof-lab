@@ -9,7 +9,6 @@ export interface Settings {
   apiKey: string;
   model: string;
   mode: Mode;
-  showSymbolKeyboard: boolean;
 }
 
 export interface StoredMessage {
@@ -43,5 +42,4 @@ export const DEFAULT_SETTINGS: Settings = {
   apiKey: "",
   model: DEFAULT_MODELS.anthropic,
   mode: "show-your-work",
-  showSymbolKeyboard: true,
 };

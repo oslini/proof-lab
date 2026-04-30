@@ -6,9 +6,7 @@ A Socratic AI tutor for calculus and proof construction. Proof Lab guides studen
 
 ## Why This Exists
 
-Wolfram Alpha succeeds at displaying math beautifully but fails to scaffold the higher-order skills — analysis, evaluation, construction — that actually build mathematical maturity. It solves problems *for* students rather than *with* them.
-
-Proof Lab encodes a different pedagogy: the learner is an active constructor, not a recipient. Every session enforces the Cognitive Theory of Multimedia Learning (signaling, segmenting) while adding the Socratic layer that tools like Wolfram skip. The core feature — **Show Your Work Mode** — makes expert thinking inspectable and puts metacognitive prompts at every stage.
+Proof Lab's encoded pedagogy: the learner is an active constructor, not a recipient. Every session enforces the Cognitive Theory of Multimedia Learning while adding the Socratic layer. The core feature — **Show Your Work Mode** — makes expert thinking inspectable and puts metacognitive prompts at every stage. The goal of this app is to scaffold the higher-order skills — analysis, evaluation, construction — that actually build mathematical maturity. Proof Lab solves problems *with* students, and never solves problems *for* students.
 
 ---
 

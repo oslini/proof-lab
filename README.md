@@ -1,141 +1,47 @@
 # Proof Lab
 
-> A Socratic math tutor — the AI asks first and answers last.
-
-Proof Lab is a Next.js application that helps students work through calculus problems and mathematical proofs with an AI tutor that **never volunteers solutions**. The student stays the active problem-solver; the tutor diagnoses, asks, and nudges — one step at a time.
-
-## Educational Rationale
-
-The design stems from a core critique of tools like Wolfram Alpha: they succeed at multimedia presentation but fail to scaffold the higher-order cognitive levels — analysis, evaluation, creation — and provide no metacognitive support. Proof Lab takes the **Show Your Work Mode** concept and makes it the default experience, built around four principles:
-
-- **Active construction** — the learner commits to an approach before the tutor responds
-- **Graduated hints** at visible decision points, making expert thinking inspectable
-- **Metacognitive prompts** at the close of every problem (*"Which step felt riskiest?"*)
-- **Expertise-reversal escape hatch** — an optional Free mode for advanced learners who need fewer constraints
+A Socratic AI tutor for calculus and proof construction. Proof Lab guides students through problems one step at a time — it never gives the answer. The tutor asks what you've tried, surfaces decision points where approaches branch, and graduates hints from conceptual nudge to partial worked step. Sessions are stored locally; no account or database required.
 
 ---
 
-## How It Works
+## Why This Exists
 
-1. **Add your API key** — paste an [Anthropic](https://console.anthropic.com) or [OpenAI](https://platform.openai.com) key into Settings once. It stays in your browser; it is never stored server-side.
-2. **Open the Lab** — type a problem (LaTeX syntax supported; a symbol keyboard is provided). The tutor begins by asking what you have already tried.
-3. **Work through it** — each turn advances at most one step. Use the hint buttons when you are stuck.
+Wolfram Alpha succeeds at displaying math beautifully but fails to scaffold the higher-order skills — analysis, evaluation, construction — that actually build mathematical maturity. It solves problems *for* students rather than *with* them.
+
+Proof Lab encodes a different pedagogy: the learner is an active constructor, not a recipient. Every session enforces the Cognitive Theory of Multimedia Learning (signaling, segmenting) while adding the Socratic layer that tools like Wolfram skip. The core feature — **Show Your Work Mode** — makes expert thinking inspectable and puts metacognitive prompts at every stage.
 
 ---
 
-## Tutor Behavior
+## Stack
 
-The pedagogical logic lives entirely in `lib/prompts/tutorSystemPrompt.ts`. These rules are enforced in every session:
-
-1. **Diagnose before teaching** — the first reply to any new problem asks what the student has tried. No solving begins until the student responds.
-2. **One step at a time** — every response advances at most one step and ends with a question that returns control to the student.
-3. **Graduated hints** — when the student is stuck, the tutor chooses the lowest level that could unblock:
-   - **L1 — Conceptual nudge:** names the relevant idea without applying it (*"this looks like it wants the chain rule"*).
-   - **L2 — Theorem pointer:** states the rule and asks the student to apply it.
-   - **L3 — Worked partial step:** shows one annotated step, then stops.
-4. **Decision points** — when multiple valid approaches exist, the tutor names them and asks the student to choose.
-5. **Metacognitive close** — after a solution is reached, the tutor asks a reflective question.
-6. **Verify student work** — correct steps are affirmed *and* explained; incorrect steps are located (not corrected) so the student retries.
-7. **Refuse to do homework** — a direct request for the answer is redirected to an L1 hint with an explanation of the trade-off.
-
-### Modes
-
-| Mode | Behaviour |
+| Layer | Technology |
 |---|---|
-| **Show Your Work** (default) | Full Socratic constraints above. Solution never given unprompted. |
-| **Free** | Relaxed mode for advanced learners. Favours questions, but will produce full solutions on explicit request. |
-
----
-
-## Core Features
-
-| Feature | Description |
-|---|---|
-| **Show Your Work** | Default mode: tutor diagnoses your approach first, then asks a guiding question. No solution volunteered. |
-| **Graduated Hints** | L1 names the key idea · L2 points to the relevant theorem · L3 shows one step — then stops. |
-| **Decision Points** | When approaches branch, the tutor names the fork and asks you to pick. Expert reasoning made inspectable. |
-| **Math Input** | LaTeX-aware textarea with live KaTeX preview and a clickable symbol keyboard (operators, calculus, Greek, sets, structures). |
-| **Function Plots** | Inline graphs rendered from ` ```plot ` code blocks in tutor responses. |
-| **Session History** | Past sessions saved to localStorage and accessible from the Sessions page. |
-
----
-
-## Project Structure
-
-```
-proof-lab/
-├── app/
-│   ├── api/chat/          # Streaming route handler — forwards BYO key to chosen provider
-│   ├── lab/               # Main tutor chat interface (chat + math input + plot pane)
-│   ├── sessions/          # Past session history from localStorage
-│   ├── settings/          # Provider select, API key, model, and mode toggle
-│   ├── layout.tsx
-│   └── page.tsx           # Landing page
-├── components/
-│   ├── Chat/
-│   │   ├── ChatPane.tsx        # Streaming message list
-│   │   ├── MessageBubble.tsx   # Renders prose + KaTeX + plot blocks
-│   │   ├── MathInput.tsx       # LaTeX textarea with live preview
-│   │   ├── SymbolKeyboard.tsx  # Clickable math symbol palette
-│   │   └── HintControls.tsx    # L1 / L2 / L3 hint buttons
-│   ├── Plot/
-│   │   └── FunctionPlot.tsx    # Wraps function-plot for inline graphs
-│   └── Layout/
-│       └── Header.tsx, Sidebar.tsx
-├── lib/
-│   ├── prompts/
-│   │   ├── tutorSystemPrompt.ts  # The pedagogical core
-│   │   └── hintLadder.ts         # L1/L2/L3 hint prompt fragments
-│   ├── providers/
-│   │   └── selectProvider.ts     # Anthropic / OpenAI dispatch via AI SDK
-│   ├── storage/
-│   │   ├── sessions.ts           # localStorage CRUD for sessions
-│   │   └── settings.ts           # localStorage CRUD for provider, key, model, mode
-│   └── math/
-│       ├── parseBlocks.ts        # Splits output into prose / math / plot blocks
-│       └── symbols.ts            # Symbol palette data table
-├── types/
-│   └── index.ts                  # Session, Message, Settings, HintLevel
-├── AGENTS.md              # Instructions for AI coding agents working on this repo
-└── CLAUDE.md              # Claude-specific agent instructions
-```
-
-### Why the API route exists when keys are local
-
-The user's key is stored in localStorage and sent as a request header to `/api/chat`. The route forwards it to the chosen provider and streams tokens back. This sidesteps CORS restrictions on direct browser calls to Anthropic's API and provides a single consistent server-side surface for both providers via the Vercel AI SDK.
-
----
-
-## Tech Stack
-
-| | |
-|---|---|
-| Framework | [Next.js 15](https://nextjs.org) — App Router, TypeScript |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com) |
-| AI | [Vercel AI SDK](https://sdk.vercel.ai) (`ai`, `@ai-sdk/anthropic`, `@ai-sdk/openai`) — streaming, unified across providers |
-| Math rendering | [KaTeX](https://katex.org) via `react-katex` |
-| Function plots | [function-plot](https://mauriciopoppe.github.io/function-plot/) (D3-based) |
-| Persistence | `localStorage` — no database, no auth in v1 |
-
-Default models: **Claude** `claude-sonnet-4-6` · **OpenAI** `gpt-4o` (both selectable in Settings).
+| Framework | Next.js 15 (App Router) + TypeScript |
+| Styling | Tailwind CSS v4 |
+| AI streaming | Vercel AI SDK (`ai`, `@ai-sdk/react`) |
+| Providers | Anthropic (`claude-sonnet-4-6`) · OpenAI (`gpt-4o`) |
+| Math rendering | KaTeX via `react-katex` |
+| Function plots | `function-plot` (D3-based) |
+| Persistence | `localStorage` — no DB, no auth |
 
 ---
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18+
-- An API key from [Anthropic](https://console.anthropic.com) or [OpenAI](https://platform.openai.com)
-
-### Install & Run
+**Prerequisites:** Node.js 18+, an Anthropic or OpenAI API key.
 
 ```bash
+git clone <repo-url>
+cd proof-lab
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), go to **Settings**, paste your API key, then open the **Lab** to start a session.
+1. Visit `http://localhost:3000/settings`
+2. Paste your Anthropic or OpenAI API key and select your preferred model
+3. Visit `/lab` and start a problem
+
+Your API key is stored only in your browser's `localStorage`. It is sent to the local `/api/chat` route for that one request and is never logged or persisted server-side.
 
 ### Other Scripts
 
@@ -147,12 +53,145 @@ npm run lint     # run ESLint
 
 ---
 
+## Project Structure
+
+```
+app/
+  page.tsx                # Landing page — intro, "Start a session" CTA, settings link
+  lab/page.tsx            # Main tutor interface (chat + math input + plot pane)
+  sessions/page.tsx       # List of saved sessions from localStorage
+  settings/page.tsx       # Provider, API key, model, and mode configuration
+  api/chat/route.ts       # Streaming endpoint — proxies to Anthropic or OpenAI
+
+components/
+  Chat/
+    ChatPane.tsx          # Streaming message list
+    MessageBubble.tsx     # Renders prose + KaTeX + plot blocks
+    MathInput.tsx         # LaTeX textarea with live KaTeX preview
+    SymbolKeyboard.tsx    # Clickable math symbol palette with cursor templates
+    HintControls.tsx      # L1 / L2 / L3 hint buttons + decision-point marker
+  Plot/
+    FunctionPlot.tsx      # Wraps function-plot for inline graphs
+  Layout/
+    Header.tsx
+    Sidebar.tsx
+
+lib/
+  prompts/
+    tutorSystemPrompt.ts  # The pedagogical core — all Socratic rules encoded here
+    hintLadder.ts         # Prompt fragments for L1 / L2 / L3 hints
+  providers/
+    selectProvider.ts     # Returns the AI SDK model object based on settings
+  storage/
+    sessions.ts           # localStorage CRUD for session history
+    settings.ts           # localStorage CRUD for provider, key, model, mode
+  math/
+    parseBlocks.ts        # Splits assistant output into prose / math / plot segments
+    symbols.ts            # Symbol palette data table { label, latex, cursorOffset }
+
+types/
+  index.ts                # Session, Message, Settings, HintLevel
+```
+
+---
+
+## How the App Works
+
+### User Flow
+
+1. **Settings** (`/settings`) — paste an API key, choose provider and model, set mode (Show Your Work or Free).
+2. **Lab** (`/lab`) — type or compose a problem using the LaTeX input and symbol keyboard, send, and receive a streamed Socratic response.
+3. **Sessions** (`/sessions`) — browse, reopen, or delete past sessions. Each session is auto-titled from the first message.
+
+### API Route
+
+`/api/chat` is a thin, stateless proxy. It receives the student's API key as a request header, calls `selectProvider` to instantiate the correct AI SDK model, invokes `streamText` with the full message history and system prompt, and returns a `toDataStreamResponse()` stream. The Vercel AI SDK's `useChat` hook on the client consumes this stream directly.
+
+The route exists because Anthropic's API does not allow direct browser calls (no CORS opt-in header). It holds the key in memory for the duration of the single request only.
+
+### Math Input
+
+Students compose problems in a LaTeX-aware textarea (`MathInput`). A live KaTeX preview renders below the input as they type. The `SymbolKeyboard` provides a collapsible palette of clickable symbols organized into sections:
+
+- **Operators:** `+ − × ÷ ± ⋅ √ ⁿ√`
+- **Relations:** `= ≠ < > ≤ ≥ ≈ ≡ →`
+- **Calculus:** `∫ ∬ ∮ ∂ ∇ Σ Π lim` plus templates for `\frac{d}{dx}`, `\int_{a}^{b}`, `\sum_{i=1}^{n}`, `\lim_{x \to}`
+- **Greek:** `α β γ δ ε θ λ μ π σ φ ω` (+ uppercase)
+- **Sets / Logic:** `∈ ∉ ⊂ ∪ ∩ ∅ ∀ ∃ ¬ ∧ ∨ ⟹ ⟺ ℕ ℤ ℚ ℝ ℂ`
+- **Structures:** templates for `\frac{}{}`, `\sqrt{}`, `x^{}`, `x_{}`, matrix, and cases
+
+Each symbol stores a `cursorOffset` so clicking a template (e.g. `\frac{}{}`) lands the cursor inside the first placeholder automatically.
+
+### Math and Plot Rendering
+
+The assistant uses standard `$...$` and `$$...$$` delimiters. `parseBlocks.ts` splits each response into prose segments and math segments; `MessageBubble` renders math via `react-katex`.
+
+A fenced ` ```plot ` block (e.g., ` ```plot\nf(x) = sin(x)\n``` `) is rendered as an inline `FunctionPlot` component. The system prompt teaches the model this convention, so the tutor can draw a graph as part of an explanation.
+
+---
+
+## The Pedagogical Core
+
+All educational logic is encoded in `lib/prompts/tutorSystemPrompt.ts`. The UI is a delivery mechanism for the pedagogy, not the product itself.
+
+### Show Your Work Mode (Default)
+
+The system prompt enforces seven rules on every turn:
+
+1. **Diagnose first.** Before doing anything, ask what the student has tried or what their first instinct is.
+2. **One step per turn.** Every response ends with a question that returns control to the student.
+3. **Graduated hints.** When the student is stuck, choose the lowest level that could unblock:
+   - **L1 — Conceptual nudge:** name the relevant idea without applying it
+   - **L2 — Theorem pointer:** state the rule and ask the student to apply it
+   - **L3 — Worked partial step:** show exactly one annotated step, then stop
+4. **Surface decision points.** When approaches branch, name the options and ask the student to choose.
+5. **Metacognitive close.** After a solution is reached, ask a reflective question ("Which step felt riskiest?", "Where could this approach fail?").
+6. **Verify student work.** Affirm correct steps and explain *why* they work. For incorrect steps, locate the error without fixing it and ask the student to retry.
+7. **Refuse direct answers.** "Just give me the answer" receives an L1 hint and an explanation of the trade-off.
+
+The `HintControls` component appends a fragment from `hintLadder.ts` to the outgoing message when the student clicks L1, L2, or L3 — enforcing the hint level in both the UI and the prompt simultaneously.
+
+### Free Mode
+
+For advanced learners, Free Mode relaxes the Socratic constraints. The tutor still favors questions but will produce full worked solutions on explicit request. This implements the expertise-reversal escape hatch: scaffolding that helps novices can impede experts who already possess the relevant schema.
+
+---
+
+## Persistence
+
+All state lives in `localStorage` via two utility modules:
+
+- `lib/storage/sessions.ts` — a keyed list of sessions, each containing `{ id, title, createdAt, messages[], mode }`. Sessions are auto-titled from the first user message.
+- `lib/storage/settings.ts` — `{ provider, apiKey, model, mode }`.
+
+No telemetry. No server-side logging. No accounts. Refreshing mid-session restores the conversation from localStorage.
+
+---
+
+## Verification Checklist
+
+Before shipping, confirm these end-to-end behaviors:
+
+- [ ] `/settings` saves a key; `/lab` streams a response
+- [ ] "Find the derivative of f(x) = x² sin(x)" → tutor asks what rule applies before solving
+- [ ] "Just give me the answer" → tutor refuses, offers L1 hint
+- [ ] L1 hint names a concept without applying it; L3 shows one step and stops
+- [ ] "Prove 1+2+…+n = n(n+1)/2 by induction" → tutor separates base case and inductive step
+- [ ] `$\frac{d}{dx}[x^2] = 2x$` renders correctly in a response
+- [ ] A ` ```plot ` block renders an inline graph
+- [ ] Clicking `∫` in the symbol keyboard lands the cursor inside `\int_{}^{}`
+- [ ] Refreshing `/lab` mid-session restores the conversation
+- [ ] Switching to OpenAI in settings still produces constrained Socratic tutoring
+- [ ] Free Mode produces full worked solutions on request
+
+---
+
 ## Out of Scope (v1)
 
 - Accounts, multi-device sync, or session sharing
-- Server-side analytics or learner-progress tracking
+- Server-side learner-progress tracking or analytics
 - Voice or handwriting input
 - Curriculum sequencing or skill trees
-- Cost metering / rate limiting (the key is yours)
+- Cost metering on the user's API key
 
-These are reasonable v2 directions, but v1 has one goal: prove that the Socratic system prompt and graduated hint UI produce a learning experience that is meaningfully different from asking a chatbot for the answer.
+These are reasonable v2 directions. The v1 goal is to demonstrate that the Socratic system prompt and graduated hint UI produce a learning experience that is measurably different from asking a chatbot for the answer directly.

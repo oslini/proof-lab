@@ -1,65 +1,80 @@
-import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="mx-auto flex max-w-3xl flex-col gap-12 px-6 py-20">
+      <section>
+        <div className="mb-3 inline-block rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+          A Socratic math tutor
+        </div>
+        <h1 className="text-5xl font-semibold tracking-tight">Proof Lab</h1>
+        <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
+          Work through calculus and proofs with an AI that asks first and answers last.
+          You stay the active problem-solver. Hints come graduated, not pre-packaged.
+        </p>
+        <div className="mt-6 flex gap-3">
+          <Link
+            href="/lab"
+            className="rounded-lg bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          >
+            Start a session
+          </Link>
+          <Link
+            href="/settings"
+            className="rounded-lg border border-zinc-300 px-5 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+          >
+            Add API key
+          </Link>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        <Feature
+          title="Show Your Work"
+          body="Default mode: tutor diagnoses, then asks. No volunteered solutions; you commit before the model does."
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
+        <Feature
+          title="Graduated hints"
+          body="Stuck? Pick a level. L1 names the idea, L2 points at the theorem, L3 shows one step — then stops."
+        />
+        <Feature
+          title="Decision points"
+          body="When approaches branch, the tutor names the fork and asks you to pick. Expert thinking, made inspectable."
+        />
+      </section>
+
+      <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+        <h2 className="text-sm font-semibold">How it works</h2>
+        <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+          <li>
+            Bring your own API key from{" "}
+            <a className="underline" href="https://console.anthropic.com" target="_blank" rel="noreferrer">
+              Anthropic
             </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
+            or{" "}
+            <a className="underline" href="https://platform.openai.com" target="_blank" rel="noreferrer">
+              OpenAI
             </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            — paste it once into Settings. Stays in your browser.
+          </li>
+          <li>
+            Open the Lab, type a problem (LaTeX welcome, symbol keyboard provided), and the tutor will start by
+            asking what you have tried.
+          </li>
+          <li>
+            Each turn advances at most one step. Use the L1/L2/L3 buttons when you need a nudge.
+          </li>
+        </ol>
+      </section>
+    </div>
+  );
+}
+
+function Feature({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="text-sm font-semibold">{title}</div>
+      <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{body}</div>
     </div>
   );
 }

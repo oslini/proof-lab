@@ -3,14 +3,25 @@
 import { InlineMath, BlockMath } from "react-katex";
 import { parseBlocks } from "@/lib/math/parseBlocks";
 import { FunctionPlot } from "@/components/Plot/FunctionPlot";
+import { AssistantMessage } from "@/components/Chat/AssistantMessage";
 
 interface Props {
   role: "user" | "assistant" | "system";
   text: string;
+  isStreaming?: boolean;
 }
 
-export function MessageBubble({ role, text }: Props) {
+export function MessageBubble({ role, text, isStreaming = false }: Props) {
   const isUser = role === "user";
+
+  if (role === "assistant") {
+    return (
+      <div className="flex justify-start">
+        <AssistantMessage text={text} isStreaming={isStreaming} />
+      </div>
+    );
+  }
+
   const blocks = parseBlocks(text);
 
   return (

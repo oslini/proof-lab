@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "mathlive/static.css";
 import "mathlive/fonts.css";
+import "streamdown/styles.css";
 import "./globals.css";
 import { Header } from "@/components/Layout/Header";
 import ParticlesComponent from "@/components/ui/particles-bg";
